@@ -49,6 +49,33 @@ try {
   FIREBASE_CONFIG = {};
 }
 
+type CompressionFormat = "deflate" | "deflate-raw" | "gzip";
+interface CompressionStream extends GenericTransformStream {
+  readonly readable: ReadableStream<Uint8Array>;
+  readonly writable: WritableStream<BufferSource>;
+}
+declare var CompressionStream: {
+  prototype: CompressionStream;
+  new (format: CompressionFormat): CompressionStream;
+};
+interface DecompressionStream extends GenericTransformStream {
+  readonly readable: ReadableStream<Uint8Array>;
+  readonly writable: WritableStream<BufferSource>;
+}
+declare var DecompressionStream: {
+  prototype: DecompressionStream;
+  new (format: CompressionFormat): DecompressionStream;
+};
+function compress(data: Uint8Array): Promise<ArrayBuffer> {
+  return new Response(
+    new Blob([data]).stream().pipeThrough(new CompressionStream("gzip")),
+  ).arrayBuffer();
+}
+function decompress(data: Uint8Array): Promise<ArrayBuffer> {
+  return new Response(
+    new Blob([data]).stream().pipeThrough(new DecompressionStream("gzip")),
+  ).arrayBuffer();
+}
 let firebaseApp: ReturnType<typeof initializeApp> | null = null;
 let firestore: ReturnType<typeof getFirestore> | null = null;
 let firebaseStorage: ReturnType<typeof getStorage> | null = null;
@@ -92,7 +119,8 @@ const encryptElements = async (
 ): Promise<{ ciphertext: ArrayBuffer; iv: Uint8Array }> => {
   const json = JSON.stringify(elements);
   const encoded = new TextEncoder().encode(json);
-  const { encryptedBuffer, iv } = await encryptData(key, encoded);
+  const compressed = await compress(encoded);
+  const { encryptedBuffer, iv } = await encryptData(key, compressed);
 
   return { ciphertext: encryptedBuffer, iv };
 };
@@ -105,9 +133,8 @@ const decryptElements = async (
   const iv = data.iv.toUint8Array();
 
   const decrypted = await decryptData(iv, ciphertext, roomKey);
-  const decodedData = new TextDecoder("utf-8").decode(
-    new Uint8Array(decrypted),
-  );
+  const decompressed = await decompress(new Uint8Array(decrypted));
+  const decodedData = new TextDecoder("utf-8").decode(decompressed);
   return JSON.parse(decodedData);
 };
 
