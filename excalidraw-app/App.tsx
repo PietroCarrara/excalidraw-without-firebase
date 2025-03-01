@@ -68,6 +68,10 @@ import {
 import CustomStats from "./CustomStats";
 import type { RestoredDataState } from "../packages/excalidraw/data/restore";
 import { restore, restoreAppState } from "../packages/excalidraw/data/restore";
+import {
+  ExportToExcalidrawPlus,
+  exportToExcalidrawPlus,
+} from "./components/ExportToExcalidrawPlus";
 import { updateStaleImageStatuses } from "./data/FileManager";
 import { newElementWith } from "../packages/excalidraw/element/mutateElement";
 import { isInitializedImageElement } from "../packages/excalidraw/element/typeChecks";
@@ -799,6 +803,30 @@ const ExcalidrawWrapper = () => {
             toggleTheme: true,
             export: {
               onExportToBackend,
+              renderCustomUI: excalidrawAPI
+                ? (elements, appState, files) => {
+                    return (
+                      <ExportToExcalidrawPlus
+                        elements={elements}
+                        appState={appState}
+                        files={files}
+                        name={excalidrawAPI.getName()}
+                        onError={(error) => {
+                          excalidrawAPI?.updateScene({
+                            appState: {
+                              errorMessage: error.message,
+                            },
+                          });
+                        }}
+                        onSuccess={() => {
+                          excalidrawAPI.updateScene({
+                            appState: { openDialog: null },
+                          });
+                        }}
+                      />
+                    );
+                  }
+                : undefined,
             },
           },
         }}
@@ -846,6 +874,22 @@ const ExcalidrawWrapper = () => {
         <OverwriteConfirmDialog>
           <OverwriteConfirmDialog.Actions.ExportToImage />
           <OverwriteConfirmDialog.Actions.SaveToDisk />
+          {excalidrawAPI && (
+            <OverwriteConfirmDialog.Action
+              title={t("overwriteConfirm.action.excalidrawPlus.title")}
+              actionLabel={t("overwriteConfirm.action.excalidrawPlus.button")}
+              onClick={() => {
+                exportToExcalidrawPlus(
+                  excalidrawAPI.getSceneElements(),
+                  excalidrawAPI.getAppState(),
+                  excalidrawAPI.getFiles(),
+                  excalidrawAPI.getName(),
+                );
+              }}
+            >
+              {t("overwriteConfirm.action.excalidrawPlus.description")}
+            </OverwriteConfirmDialog.Action>
+          )}
         </OverwriteConfirmDialog>
         <AppFooter onChange={() => excalidrawAPI?.refresh()} />
         {excalidrawAPI && <AIComponents excalidrawAPI={excalidrawAPI} />}
@@ -1043,7 +1087,16 @@ const ExcalidrawWrapper = () => {
               icon: exportToPlus,
               predicate: true,
               keywords: ["plus", "export", "save", "backup"],
-              perform: () => {},
+              perform: () => {
+                if (excalidrawAPI) {
+                  exportToExcalidrawPlus(
+                    excalidrawAPI.getSceneElements(),
+                    excalidrawAPI.getAppState(),
+                    excalidrawAPI.getFiles(),
+                    excalidrawAPI.getName(),
+                  );
+                }
+              },
             },
             {
               ...CommandPalette.defaultItems.toggleTheme,

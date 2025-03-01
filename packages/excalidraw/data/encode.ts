@@ -24,7 +24,7 @@ export const toByteString = (data: string | Uint8Array | ArrayBuffer) => {
   return bstring;
 };
 
-export const byteStringToArrayBuffer = (byteString: string) => {
+const byteStringToArrayBuffer = (byteString: string) => {
   const buffer = new ArrayBuffer(byteString.length);
   const bufferView = new Uint8Array(buffer);
   for (let i = 0, len = byteString.length; i < len; i++) {
