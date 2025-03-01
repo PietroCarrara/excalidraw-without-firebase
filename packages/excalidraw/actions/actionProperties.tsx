@@ -56,6 +56,7 @@ import {
   ArrowheadCrowfootIcon,
   ArrowheadCrowfootOneIcon,
   ArrowheadCrowfootOneOrManyIcon,
+  EllipseIcon,
 } from "../components/icons";
 import {
   ARROW_TYPE,
@@ -1343,6 +1344,10 @@ export const actionChangeRoundness = register({
                     ? ROUNDNESS.ADAPTIVE_RADIUS
                     : ROUNDNESS.PROPORTIONAL_RADIUS,
                 }
+              : value === "circular"
+              ? {
+                  type: ROUNDNESS.CIRCULAR,
+                }
               : null,
         });
       }),
@@ -1378,6 +1383,11 @@ export const actionChangeRoundness = register({
               value: "round",
               text: t("labels.round"),
               icon: EdgeRoundIcon,
+            },
+            {
+              value: "circular",
+              text: "Circular",
+              icon: EllipseIcon,
             },
           ]}
           value={getFormValue(
