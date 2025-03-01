@@ -364,6 +364,10 @@ export const ROUNDNESS = {
   // NOTE right now we don't allow configuration and use a constant radius
   // (see DEFAULT_ADAPTIVE_RADIUS constant)
   ADAPTIVE_RADIUS: 3,
+
+  // If the element is a square (width === height), then render it as a circle.
+  // Otherwise, it will be rendered as a pill
+  CIRCULAR: 4,
 } as const;
 
 export const ROUGHNESS = {

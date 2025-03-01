@@ -471,6 +471,10 @@ export const getCornerRadius = (x: number, element: ExcalidrawElement) => {
     return fixedRadiusSize;
   }
 
+  if (element.roundness?.type === ROUNDNESS.CIRCULAR) {
+    return x / 2;
+  }
+
   return 0;
 };
 

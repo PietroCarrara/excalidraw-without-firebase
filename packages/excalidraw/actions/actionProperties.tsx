@@ -56,6 +56,7 @@ import {
   ArrowheadCrowfootIcon,
   ArrowheadCrowfootOneIcon,
   ArrowheadCrowfootOneOrManyIcon,
+  EllipseIcon,
 } from "../components/icons";
 import {
   ARROW_TYPE,
@@ -1344,6 +1345,10 @@ export const actionChangeRoundness = register({
                     ? ROUNDNESS.ADAPTIVE_RADIUS
                     : ROUNDNESS.PROPORTIONAL_RADIUS,
                 }
+              : value === "circular"
+              ? {
+                  type: ROUNDNESS.CIRCULAR,
+                }
               : null,
         });
       }),
@@ -1380,12 +1385,23 @@ export const actionChangeRoundness = register({
               text: t("labels.round"),
               icon: EdgeRoundIcon,
             },
+            {
+              value: "circular",
+              text: "Circular",
+              icon: EllipseIcon,
+            },
           ]}
           value={getFormValue(
             elements,
             appState,
             (element) =>
-              hasLegacyRoundness ? null : element.roundness ? "round" : "sharp",
+              hasLegacyRoundness
+                ? null
+                : element.roundness
+                ? element.roundness.type === ROUNDNESS.CIRCULAR
+                  ? "circular"
+                  : "round"
+                : "sharp",
             (element) =>
               !isArrowElement(element) && element.hasOwnProperty("roundness"),
             (hasSelection) =>
