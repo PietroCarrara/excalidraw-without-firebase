@@ -171,6 +171,10 @@ export const SelectedShapeActions = ({
         <>{renderAction("changeRoundness")}</>
       )}
 
+      {targetElements.some(isImageElement) && (
+        <>{renderAction("changeDropShadow")}</>
+      )}
+
       {(toolIsArrow(appState.activeTool.type) ||
         targetElements.some((element) => toolIsArrow(element.type))) && (
         <>{renderAction("changeArrowType")}</>

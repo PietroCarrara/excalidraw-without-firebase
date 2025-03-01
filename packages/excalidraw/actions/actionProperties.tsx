@@ -1326,6 +1326,54 @@ export const actionChangeVerticalAlign = register({
   },
 });
 
+export const actionChangeDropShadow = register({
+  name: "changeDropShadow",
+  label: "Change drop shadow",
+  trackEvent: false,
+  perform: (elements, appState, value: number) => {
+    return {
+      elements: changeProperty(elements, appState, (el) => {
+        return newElementWith(el, {
+          dropShadow: {
+            blur: value,
+            color: "black",
+          },
+        });
+      }),
+      appState,
+      captureUpdate: CaptureUpdateAction.IMMEDIATELY,
+    };
+  },
+  PanelComponent: ({ elements, appState, updateData }) => {
+    const value = getFormValue(
+      elements,
+      appState,
+      (element) => element.dropShadow?.blur,
+      true,
+      0,
+    );
+
+    return (
+      <label className="control-label">
+        Sombra
+        <div className="range-wrapper">
+          <input
+            type="range"
+            min="0"
+            max="20"
+            step="1"
+            onChange={(event) => {
+              updateData(+event.target.value);
+            }}
+            value={value ?? 0}
+            className="range-input"
+          />
+        </div>
+      </label>
+    );
+  },
+});
+
 export const actionChangeRoundness = register({
   name: "changeRoundness",
   label: "Change edge roundness",

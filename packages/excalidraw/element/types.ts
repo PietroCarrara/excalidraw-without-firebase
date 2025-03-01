@@ -77,6 +77,10 @@ type _ExcalidrawElementBase = Readonly<{
   link: string | null;
   locked: boolean;
   customData?: Record<string, any>;
+  dropShadow?: {
+    blur: number;
+    color: "black"; // TODO: Learn how excalidraw does dark/bright mode
+  };
 }>;
 
 export type ExcalidrawSelectionElement = _ExcalidrawElementBase & {

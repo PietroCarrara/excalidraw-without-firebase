@@ -431,8 +431,9 @@ const drawElementOnCanvas = (
         ? renderConfig.imageCache.get(element.fileId)?.image
         : undefined;
       if (img != null && !(img instanceof Promise)) {
-        if (element.roundness && context.roundRect) {
+        if (context.roundRect) {
           context.beginPath();
+
           context.roundRect(
             0,
             0,
@@ -440,6 +441,12 @@ const drawElementOnCanvas = (
             element.height,
             getCornerRadius(Math.min(element.width, element.height), element),
           );
+
+          if (element.dropShadow && element.dropShadow.blur > 0) {
+            context.shadowColor = element.dropShadow.color;
+            context.shadowBlur = element.dropShadow.blur * appState.zoom.value;
+            context.fill();
+          }
           context.clip();
         }
 

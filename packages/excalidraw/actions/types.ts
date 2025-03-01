@@ -58,6 +58,7 @@ export type ActionName =
   | "zenMode"
   | "objectsSnapMode"
   | "stats"
+  | "changeDropShadow"
   | "changeStrokeColor"
   | "changeBackgroundColor"
   | "changeFillStyle"
